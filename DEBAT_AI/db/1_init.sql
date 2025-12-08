@@ -21,5 +21,6 @@ CREATE TABLE messages (
     FOREIGN KEY (debate_id) REFERENCES debates (id),
     arg_type VARCHAR(50) DEFAULT 'claim',      -- Exemple: 'claim', 'premise'
     relation_type VARCHAR(50) DEFAULT 'none',  -- Exemple: 'attack', 'support'
-    target_id INTEGER REFERENCES messages(id)  -- L'ID du message qu'on attaque
+    target_id INTEGER REFERENCES messages(id),  -- L'ID du message qu'on attaque
+    feedback TEXT -- Stocke le conseil/critique de l'IA
 );

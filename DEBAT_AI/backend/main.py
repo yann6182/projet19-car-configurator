@@ -1,14 +1,14 @@
 import os
 import asyncpg
+import json
 from dotenv import load_dotenv
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
-from flask import json
+from fastapi.middleware.cors import CORSMiddleware 
 from pydantic import BaseModel
 from typing import List, Dict, Optional, Any
 
 # --- IMPORT DE TON MODULE IA ---
-from ai_model import analyze_argument, solve_debate
+from ai_model import analyze_argument, solve_debate, generate_suggestions
 
 # Load environment variables
 load_dotenv()
@@ -46,7 +46,7 @@ class Message(BaseModel):
     arg_type: Optional[str] = "claim"
     relation_type: Optional[str] = "none"
     target_id: Optional[int] = None
-    
+    feedback: Optional[str] = None
     # Champ spécial pour envoyer les gagnants au Frontend
     current_winners: Optional[List[str]] = []
 
@@ -113,7 +113,7 @@ async def get_messages(debate_id: int):
         rows = await connection.fetch(
             """
             SELECT m.id, m.content, m.user_id, m.debate_id, m.created_at, 
-                   m.arg_type, m.relation_type, m.target_id, u.username
+                   m.arg_type, m.relation_type, m.target_id, m.feedback, u.username
             FROM messages m
             JOIN users u ON m.user_id = u.id
             WHERE m.debate_id = $1
@@ -121,7 +121,6 @@ async def get_messages(debate_id: int):
             """,
             debate_id
         )
-        
         return [Message(**dict(row)) for row in rows]
 
 @app.post("/api/debates/{debate_id}/messages", response_model=Message)
@@ -149,6 +148,7 @@ async def create_message(debate_id: int, message_in: MessageIn):
     arg_type = ai_analysis.get('type', 'claim')
     relation = ai_analysis.get('relation', 'none')
     target_id = ai_analysis.get('target_id')
+    feedback = ai_analysis.get('feedback')
 
     # Si target_id est vide ou invalide (ex: pas un nombre), on le met à None
     if not isinstance(target_id, int):
@@ -166,11 +166,11 @@ async def create_message(debate_id: int, message_in: MessageIn):
             # 3. Insertion en Base de Données (Avec les nouvelles colonnes)
             row = await connection.fetchrow(
                 """
-                INSERT INTO messages (content, user_id, debate_id, arg_type, relation_type, target_id)
-                VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING id, content, user_id, debate_id, created_at, arg_type, relation_type, target_id
+                INSERT INTO messages (content, user_id, debate_id, arg_type, relation_type, target_id, feedback)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                RETURNING id, content, user_id, debate_id, created_at, arg_type, relation_type, target_id, feedback
                 """,
-                message_in.content, user_id, debate_id, arg_type, relation, target_id
+                message_in.content, user_id, debate_id, arg_type, relation, target_id, feedback
             )
 
             # 4. Calcul Logique (Tweety) - On relit TOUT le débat pour mettre à jour le graphe
@@ -204,6 +204,32 @@ async def websocket_endpoint(websocket: WebSocket, debate_id: int):
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket, debate_id)
+
+@app.get("/api/debates/{debate_id}/suggestions/{target_message_id}")
+async def get_suggestions(debate_id: int, target_message_id: int):
+    """
+    Génère 3 idées de contre-arguments pour attaquer un message spécifique.
+    """
+    db_pool = await get_pool()
+    async with db_pool.acquire() as connection:
+        # 1. On récupère le message qu'on veut attaquer
+        target_msg = await connection.fetchrow(
+            "SELECT content FROM messages WHERE id = $1", target_message_id
+        )
+        if not target_msg:
+            return {"error": "Message introuvable"}
+
+        # 2. On récupère un peu de contexte global
+        context_rows = await connection.fetch(
+            "SELECT content FROM messages WHERE debate_id = $1 ORDER BY created_at DESC LIMIT 5", 
+            debate_id
+        )
+        context_text = "\n".join([r['content'] for r in context_rows])
+
+        # 3. On appelle ton IA
+        suggestions = generate_suggestions(target_msg['content'], context_text)
+        
+        return {"suggestions": suggestions}
 
 @app.get("/")
 def read_root():
