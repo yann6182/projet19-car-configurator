@@ -1,0 +1,47 @@
+<div class="page-container">
+  
+  <header class="header-section">
+    <h1>Debate Arena 🧠</h1>
+    <p>Choose a battlefield based on logic.</p>
+  </header>
+
+  <div *ngIf="debates.length === 0" class="loading-container">
+    <p>Loading topics...</p>
+  </div>
+
+  <!-- Grille des sujets -->
+  <main class="topics-grid" *ngIf="debates.length > 0">
+    <div *ngFor="let debate of debates" 
+         class="topic-card" 
+         (click)="openSetup(debate)">
+      <h3 class="card-title">{{ debate.topic }}</h3>
+      <div class="card-footer">
+        <span>Start Match &rarr;</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODALE DE CONFIGURATION (Le Setup) -->
+  <div class="modal-overlay" *ngIf="selectedDebate" (click)="closeSetup()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Setup the Debate</h3>
+      <p class="topic-preview">Topic: <strong>{{ selectedDebate.topic }}</strong></p>
+
+      <div class="input-group">
+        <label>🔵 Team / Debater A (Pro)</label>
+        <input type="text" [(ngModel)]="debaterA" placeholder="Ex: Alice">
+      </div>
+
+      <div class="input-group">
+        <label>🔴 Team / Debater B (Con)</label>
+        <input type="text" [(ngModel)]="debaterB" placeholder="Ex: Bob">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeSetup()">Cancel</button>
+        <button class="btn-start" (click)="startDebate()">⚔️ ENTER ARENA</button>
+      </div>
+    </div>
+  </div>
+
+</div>
