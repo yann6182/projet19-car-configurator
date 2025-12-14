@@ -1,0 +1,410 @@
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+:root {
+  --car-color: #38bdf8;
+  --car-accent: #22c55e;
+  --car-ride: 0px;
+  --car-wheel: 52px;
+  --car-wheel-offset: 58px;
+}
+
+body {
+  margin: 0;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+header {
+  margin-bottom: 24px;
+}
+
+header h1 {
+  margin: 0 0 8px 0;
+  font-size: 2rem;
+}
+
+header p {
+  margin: 0;
+  color: #9ca3af;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 2fr 1.3fr;
+  gap: 24px;
+}
+
+.config-section,
+.result-section {
+  background: #020617;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+}
+
+.config-section {
+  border: 1px solid #1e293b;
+}
+
+.result-section {
+  border: 1px solid #1d4ed8;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+label {
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  color: #9ca3af;
+}
+
+select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #1e293b;
+  background: #020617;
+  color: #e5e7eb;
+}
+
+select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.disabled-option {
+  color: #6b7280;
+}
+
+.actions {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.preset-card {
+  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.06), transparent 45%), #0b1224;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.preset-card:hover {
+  transform: translateY(-2px);
+  border-color: #2563eb;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+}
+
+.preset-title {
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.preset-desc {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+button {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+.secondary {
+  background: transparent;
+  border: 1px solid #1e293b;
+  color: #e5e7eb;
+}
+
+.secondary:hover {
+  background: #111827;
+}
+
+.status {
+  font-size: 0.9rem;
+  color: #fbbf24;
+}
+
+.status.ok {
+  color: #22c55e;
+}
+
+.status.error {
+  color: #f97373;
+}
+
+#solution {
+  background: #020617;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #1e293b;
+  min-height: 120px;
+  white-space: pre-wrap;
+}
+
+.car-preview {
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.06));
+  border: 1px solid #1d4ed8;
+  border-radius: 16px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.car-stage {
+  position: relative;
+  height: 160px;
+  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.07), transparent 35%),
+    radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.05), transparent 30%),
+    #0b1224;
+  border-radius: 14px;
+  border: 1px solid #1f2937;
+  overflow: hidden;
+}
+
+.car-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 70%, color-mix(in srgb, var(--car-accent) 35%, transparent), transparent 45%);
+  filter: blur(16px);
+}
+
+.car {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(var(--car-ride)) scale(0.95);
+}
+
+.car-body {
+  position: relative;
+  width: 270px;
+  height: 78px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--car-color) 90%, #ffffff 6%), color-mix(in srgb, var(--car-color) 80%, #111827 10%));
+  border-radius: 18px 24px 16px 16px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45), inset 0 0 0 2px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.car-body::after {
+  content: "";
+  position: absolute;
+  inset: 12px 14px auto 14px;
+  height: 6px;
+  background: color-mix(in srgb, var(--car-accent) 70%, transparent);
+  border-radius: 999px;
+  opacity: 0.85;
+}
+
+.car-body::before {
+  content: "";
+  position: absolute;
+  inset: 6px 8px auto 8px;
+  height: 10px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
+  opacity: 0.6;
+}
+
+.car-top {
+  position: absolute;
+  bottom: 66px;
+  width: 155px;
+  height: 42px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--car-color) 80%, #0b1224 12%), color-mix(in srgb, var(--car-color) 85%, #0b1224 6%));
+  border-radius: 18px 18px 10px 10px;
+  left: 55px;
+  border: 2px solid rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+.window {
+  position: absolute;
+  bottom: 64px;
+  width: 60px;
+  height: 26px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.03));
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.window.front {
+  left: 130px;
+}
+
+.window.back {
+  left: 70px;
+}
+
+.wheel {
+  position: absolute;
+  width: var(--car-wheel);
+  height: var(--car-wheel);
+  background: #0b0f1a;
+  border-radius: 50%;
+  bottom: 6px;
+  box-shadow: inset 0 0 0 6px #111827, inset 0 0 0 10px #1f2937, 0 8px 16px rgba(0, 0, 0, 0.45);
+}
+
+.wheel::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+}
+
+.wheel.front {
+  right: var(--car-wheel-offset);
+}
+
+.wheel.back {
+  left: var(--car-wheel-offset);
+}
+
+.door-line {
+  position: absolute;
+  left: 120px;
+  top: 6px;
+  height: 60px;
+  width: 2px;
+  background: color-mix(in srgb, var(--car-accent) 30%, rgba(0, 0, 0, 0.35));
+}
+
+.headlight,
+.taillight {
+  position: absolute;
+  top: 22px;
+  width: 12px;
+  height: 10px;
+  border-radius: 6px;
+}
+
+.headlight {
+  right: 10px;
+  background: linear-gradient(90deg, #f8fafc, #fbbf24);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.9);
+}
+
+.taillight {
+  left: 10px;
+  background: linear-gradient(90deg, #ef4444, #b91c1c);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+.car-caption {
+  margin-top: 12px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--car-accent) 18%, transparent);
+  color: #e5e7eb;
+  border: 1px solid color-mix(in srgb, var(--car-accent) 45%, transparent);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.car-shadow {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 22px) scale(1.05);
+  width: 240px;
+  height: 18px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.35) 0%, transparent 65%);
+  filter: blur(8px);
+}
+
+.details {
+  margin-top: 6px;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+}
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.spec-card {
+  background: #0b1224;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spec-card.accent {
+  border-color: color-mix(in srgb, var(--car-accent) 50%, transparent);
+  background: color-mix(in srgb, var(--car-accent) 12%, #0b1224);
+}
+
+.spec-label {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.spec-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e5e7eb;
+}
+
+footer {
+  margin-top: 24px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 800px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+}

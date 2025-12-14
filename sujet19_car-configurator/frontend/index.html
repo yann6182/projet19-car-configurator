@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Configurateur de voiture (CSP)</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <h1>Configurateur de voiture</h1>
+        <p>
+          Chaque sélection est vérifiée par un <strong>solveur de contraintes (OR-Tools)</strong>.
+          Les options incompatibles sont automatiquement désactivées.
+        </p>
+      </header>
+
+      <main>
+        <section class="config-section">
+          <form id="config-form">
+            <div class="field">
+              <label for="model">Modèle</label>
+              <select id="model" name="model"></select>
+            </div>
+
+            <div class="field">
+              <label for="engine">Moteur</label>
+              <select id="engine" name="engine"></select>
+            </div>
+
+            <div class="field">
+              <label for="transmission">Boîte de vitesses</label>
+              <select id="transmission" name="transmission"></select>
+            </div>
+
+            <div class="field">
+              <label for="drivetrain">Transmission</label>
+              <select id="drivetrain" name="drivetrain"></select>
+            </div>
+
+            <div class="field">
+              <label for="color">Couleur</label>
+              <select id="color" name="color"></select>
+            </div>
+
+            <div class="field">
+              <label for="interior">Intérieur</label>
+              <select id="interior" name="interior"></select>
+            </div>
+
+            <div class="field">
+              <label for="pack">Pack</label>
+              <select id="pack" name="pack"></select>
+            </div>
+          </form>
+
+          <div class="presets">
+            <div class="preset-card" data-preset="urban">
+              <div class="preset-title">Urbain</div>
+              <div class="preset-desc">Compact • 1.6L • Manuelle • Tech</div>
+            </div>
+            <div class="preset-card" data-preset="trail">
+              <div class="preset-title">Aventure</div>
+              <div class="preset-desc">SUV • Diesel • AWD • Offroad</div>
+            </div>
+            <div class="preset-card" data-preset="gt">
+              <div class="preset-title">Performance</div>
+              <div class="preset-desc">Coupé GT • 2.0T • RWD • Perf</div>
+            </div>
+            <div class="preset-card" data-preset="lux">
+              <div class="preset-title">Executive</div>
+              <div class="preset-desc">Berline Luxe • Hybride • AWD • Premium</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="solve-btn" type="button">Trouver une configuration complète</button>
+            <button id="reset-btn" type="button" class="secondary">Réinitialiser</button>
+            <span id="status" class="status"></span>
+          </div>
+        </section>
+
+        <section class="result-section">
+          <h2>Aperçu dynamique</h2>
+          <div class="car-preview">
+            <div class="car-stage">
+              <div class="car-glow"></div>
+              <div class="car">
+                <div class="car-shadow"></div>
+                <div class="car-top"></div>
+                <div class="car-body">
+                  <div class="door-line"></div>
+                  <div class="headlight"></div>
+                  <div class="taillight"></div>
+                </div>
+                <div class="window front"></div>
+                <div class="window back"></div>
+                <div class="wheel front"></div>
+                <div class="wheel back"></div>
+              </div>
+            </div>
+            <div class="car-caption">
+              <div id="car-badge" class="badge">Sélectionnez des options</div>
+              <div id="car-details" class="details">Le visuel s'adapte à vos choix (couleur, modèle, moteur, pack).</div>
+            </div>
+            <div class="spec-grid">
+              <div class="spec-card">
+                <div class="spec-label">Puissance</div>
+                <div id="spec-power" class="spec-value">—</div>
+              </div>
+              <div class="spec-card">
+                <div class="spec-label">0-100 km/h</div>
+                <div id="spec-accel" class="spec-value">—</div>
+              </div>
+              <div class="spec-card">
+                <div class="spec-label">Autonomie/Conso</div>
+                <div id="spec-range" class="spec-value">—</div>
+              </div>
+              <div class="spec-card accent">
+                <div class="spec-label">Prix estimé</div>
+                <div id="spec-price" class="spec-value">—</div>
+              </div>
+            </div>
+          </div>
+
+          <h2>Configuration retenue</h2>
+          <pre id="solution"></pre>
+        </section>
+      </main>
+
+      <footer>
+        <small>
+          Démo pédagogique : Programmation par contraintes pour la configuration de produits.
+        </small>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
